@@ -1,66 +1,165 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+1. Laravel E-Commerce Integration Backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This repository contains the **Laravel 9 backend** for the E-Commerce integration task with Magento 2. It handles product synchronization, order management, and API endpoints to communicate with Magento.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+2. Requirements
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP 8.1.17  
+- Composer  
+- Laravel 9  
+- MySQL or compatible database  
+- Queue driver (database or Redis) for asynchronous tasks  
+- Postman for API testing  
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+3. Setup Instructions
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+3.1 Clone the repository
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+git clone https://github.com/Seif-Moustafa-Hassan/laravel-ecommerce-task.git
+cd laravel-ecommerce-task
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+3.2 Install dependencies
 
-## Laravel Sponsors
+```bash
+composer install
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3.3 Copy environment file
 
-### Premium Partners
+```bash
+cp .env.example .env
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+3.4 Configure environment
 
-## Contributing
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel_ecommerce
+DB_USERNAME=root
+DB_PASSWORD=
 
-## Code of Conduct
+QUEUE_CONNECTION=database
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+3.5 Generate application key
 
-## Security Vulnerabilities
+```bash
+php artisan key:generate
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3.6 Run migrations
 
-## License
+```bash
+php artisan migrate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+3.7 Seed sample data
+
+```bash
+php artisan db:seed
+
+4. Artisan Commands
+
+4.1 Sync products from Magento
+
+```bash
+php artisan products:sync
+-- Fetches products from Magento and stores/updates them in Laravel.
+
+4.2 Run queue worked
+
+```bash
+php artisan queue:work
+-- Fetches products from Magento and stores/updates them in Laravel.
+
+5. API Endpoints
+
+5.1 Trigger Product Sync
+
+Endpoint: GET /api/products/sync
+Description: Manually triggers a product sync from Magento.
+Sample Response:
+{
+  "message": "Product sync triggered successfully",
+  "output": "3 products dispatched to queue."
+}
+
+5.2 List Products
+
+Endpoint: GET /api/products
+Description: Returns a list of products in Laravel.
+Sample Response:
+[
+  {
+    "id": 1,
+    "sku": "ABC123",
+    "name": "Product 1",
+    "price": 100,
+    "qty": 20,
+    "external_product_id": "MAG-001"
+  },
+  {
+    "id": 2,
+    "sku": "DEF456",
+    "name": "Product 2",
+    "price": 150,
+    "qty": 10,
+    "external_product_id": "MAG-002"
+  }
+]
+
+5.3 Order Webhook (Receive Magento Order Updates)
+
+Endpoint: POST /api/orders/webhook
+Description: Receives order events from Magento.
+Sample Payload:
+{
+  "order_id": 101,
+  "increment_id": "000000101",
+  "customer": {
+    "name": "John Doe",
+    "email": "john@example.com"
+  },
+  "items": [
+    {"sku": "ABC123", "qty": 1, "price": 100},
+    {"sku": "DEF456", "qty": 2, "price": 150}
+  ],
+  "subtotal": 400,
+  "grand_total": 420,
+  "status": "processing",
+  "created_at": "2026-03-12T10:00:00Z"
+}
+
+6. Queue and Background Processing
+
+Products and orders are processed asynchronously using Laravel queues.
+Ensure a queue worker is running:
+```bash
+php artisan queue:work
+-- For production, use a process manager like supervisor to keep the worker running continuously.
+
+7. API Testing
+
+Use Postman to test all endpoints.
+Endpoints available for testing:
+Product sync
+Product listing
+Order webhook
+
+8. Notes
+
+This repository is the Laravel backend only. Magento 2 integration will be handled in a separate repository.
+Artisan commands allow manual triggering and testing of product sync and queued jobs.
+Ensure QUEUE_CONNECTION is properly configured in .env to process asynchronous tasks.
+
+9. Author
+Seif Moustafa
+GitHub: https://github.com/Seif-Moustafa-Hassan
+Email: seif.moustafa2001@gmail.com
